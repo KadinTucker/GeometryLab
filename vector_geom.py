@@ -84,7 +84,6 @@ class Polygon(LineString):
         if len(self.vertices) > 1:
             self.segments[-1] = Segment(self.vertices[-2], self.vertices[-1])
 
-
     def __str__(self):
         return "-".join(map(str, self.vertices + [self.vertices[0]]))
 

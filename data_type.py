@@ -10,12 +10,76 @@ class DataType(Enum):
     PERIODIC = 6  # Rational-like, but where x + T == x for some nonzero period T. Must be templated.
     TEXT = 7  # Arbitrary strings supported for e.g. remarks; discouraged in favour of nominal/ordinal with templates.
 
+# NOTE: consider using the Python base library numbers.py for base level implementation
 
 class DataValue:
 
     def __init__(self):
         self.dtype = DataType.TYPE_UNKNOWN
 
+class QuietNull:
+
+    """
+    A "Quiet Null" that acts as though it is a missing data value and is ignored in operations
+    The quiet null QN satisfies the following:
+     - QN == X -> False
+     - QN != X -> True
+     - QN op X -> X, for all binary operations 'op'.
+    """
+
+    def __init__(self):
+        self.dtype = DataType.TYPE_UNKNOWN
+
+    def __eq__(self, other):
+        return False
+
+    def __ne__(self, other):
+        return True
+
+    def __lt__(self, other):
+        return True
+
+    def __gt__(self, other):
+        return True
+
+    def __le__(self, other):
+        return True
+
+    def __ge__(self, other):
+        return True
+
+    def __add__(self, other):
+        return other
+
+    def __sub__(self, other):
+        return other
+
+    def __mul__(self, other):
+        return other
+
+    def __truediv__(self, other):
+        return other
+
+    def __floordiv__(self, other):
+        return other
+
+    def __mod__(self, other):
+        return other
+
+    def __pow__(self, other):
+        return other
+
+    def __neg__(self):
+        return self
+
+    def __pos__(self):
+        return self
+
+    def __abs__(self):
+        return self
+
+    def __invert__(self):
+        return self
 
 class NominalTemplate:
 
@@ -54,6 +118,10 @@ class NominalValue(DataValue):
             if value not in template.keys:
                 raise ValueError(f"value '{value}' not in template")
         self.value = value
+
+    @staticmethod
+    def to(value: int, template=None):
+        return NominalValue(value, template)
 
     def __eq__(self, other):
         return self.value == other.value and self.template is other.template

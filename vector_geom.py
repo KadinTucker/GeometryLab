@@ -44,6 +44,10 @@ class Segment:
     def get_length(self):
         return distance_point_point(self.p1, self.p2)
 
+    def get_direction(self):
+        l = self.get_length()
+        return (self.p2.x - self.p1.x) / l, (self.p2.y - self.p1.y) / l
+
     def __str__(self):
         return f"{self.p1}->{self.p2}"
 

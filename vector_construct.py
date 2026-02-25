@@ -1,7 +1,7 @@
 import vector_geom as vg
 
 def construct_point_copy(point: vg.Point):
-    return vg.Point(point.x, point.y)
+    return point.copy()
 
 def construct_point_by_offset(point: vg.Point, offset: vg.Segment):
     return vg.Point(point.x + offset.p2.x - offset.p1.x, point.y + offset.p2.y - offset.p1.y)

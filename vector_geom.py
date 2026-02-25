@@ -19,6 +19,9 @@ class Geometry:
     def get_area(self):
         return 0.0
 
+    def copy(self):
+        return Geometry()
+
 class Point(Geometry):
 
     def __init__(self, x: float, y: float):
@@ -29,6 +32,9 @@ class Point(Geometry):
 
     def as_tuple(self):
         return self.x, self.y
+
+    def copy(self):
+        return Point(self.x, self.y)
 
     def __str__(self):
         return f"({self.x}, {self.y})"
@@ -47,6 +53,9 @@ class Segment:
     def get_direction(self):
         l = self.get_length()
         return (self.p2.x - self.p1.x) / l, (self.p2.y - self.p1.y) / l
+
+    def copy(self):
+        return Segment(self.p1.copy(), self.p2.copy())
 
     def __str__(self):
         return f"{self.p1}->{self.p2}"
@@ -69,8 +78,18 @@ class LineString:
         self.segments.insert(index - 1, Segment(self.vertices[index - 1], self.vertices[index]))
         self.segments[index] = Segment(self.vertices[index], self.vertices[index + 1])
 
+    def reverse(self):
+        self.vertices.reverse()
+        self.segments.reverse()
+
+    def get_vertex(self, index):
+        return self.vertices[index].copy()
+
     def get_length(self):
         return sum([s.get_length() for s in self.segments])
+
+    def copy(self):
+        return LineString([vert.copy() for vert in self.vertices])
 
     def __str__(self):
         return "-".join(map(str, self.vertices))
@@ -87,6 +106,16 @@ class Polygon(LineString):
         self.segments.insert(0, Segment(vertex, self.vertices[0]))
         if len(self.vertices) > 1:
             self.segments[-1] = Segment(self.vertices[-2], self.vertices[-1])
+
+    def change_zero_vertex(self, to_index):
+        if to_index >= len(self.vertices) or to_index < 0:
+            raise ValueError(f"Index {to_index} out of range")
+        for i in range(to_index):
+            self.vertices.append(self.vertices.pop(0))
+            self.segments.append(self.segments.pop(0))
+
+    def copy(self):
+        return Polygon([vert.copy() for vert in self.vertices])
 
     def __str__(self):
         return "-".join(map(str, self.vertices + [self.vertices[0]]))

@@ -33,12 +33,13 @@ and boundaries, and the (covering) dimensions thereof.
 Common named topological relationships can be queried. However, more primitive relationships can also be queried:
  - Disjoint: no common points
  - Touching: non-disjoint, but all common points are boundary points
-   - Polygon - Polygon (eq. area of intersection == 0, intersection non-empty)
+   - Polygon - Polygon (eq. two segments are nontrivially colinear)
    - Line String - Line String (eq. length of intersection == 0, intersection non-empty)
    - Polygon - Line String (eq. no points of the line string are inside the polygon)
  - Containment: one object contains all points of another
-   - Point inside Polygon (eq. any infinite line containing the point intersects the polygon boundary evenly many times)
-   - Line String/Polygon inside Polygon (eq. all vertices of the line string/polygon are within the polygon)
+   - Point inside Polygon (eq. any infinite line containing the point intersects the polygon boundary oddly many times)
+   - Line String/Polygon inside Polygon (eq. all vertices of the line string/polygon are within the polygon; 
+   or at least one vertex within the polygon and no intersection with the polygon boundary)
    - Point inside Line Segment (eq. the point lies on the line spanning the line segment's vertices and is "between" 
    them)
  - Crossing: the interiors of the objects intersect, but the boundaries/endpoints of the crossing object lies outside 
@@ -89,9 +90,10 @@ Production:
 - Point: given line string, length fraction
 - Point: given line string, absolute length along
 - Segment: given origin (point) and destination (point)
-  - Can naturally be combined with constructing a point to produce a line segment with given length and direction
+  - Can naturally be combined with constructing a point relative to another to produce a line segment with given length
+  and direction
 - Point: given a source object and a destination object, construct the nearest point on the destination object to the 
-source object.
+source object. Optionally, if the destination object is a segment, treat it as though infinitely extended
 - Segment: given two geometric objects, construct the shortest line segment between them
 - Segment: given an origin, direction, and geometric object, construct the segment from the origin in the direction
 that extends just far enough to intersect the geometric object.

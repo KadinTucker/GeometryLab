@@ -57,6 +57,9 @@ class Grid:
             raise ValueError("Error: point not inside grid bounds")
         return 0, 0
 
+    def get_support(self, r: int, c: int) -> vg.Polygon:
+        return vg.Polygon([])
+
     def get_value(self, r: int, c: int) -> float:
         self.check_index(r, c)
         return self._cells[r][c]
@@ -74,8 +77,15 @@ class RasterGrid(Grid):
 
     def project(self, r: int, c: int) -> vg.Point:
         self.check_index(r, c)
-        offset = self.transform(vg.Point(c * self.scale, r * self.scale))
+        offset = self.transform(vg.Point((c + 0.5) * self.scale, (r + 0.5) * self.scale))
         return vg.Point(self.origin.x + offset.x, self.origin.y + offset.y)
+
+    def get_support(self, r: int, c: int) -> vg.Polygon:
+        self.check_index(r, c)
+        return vg.Polygon([self.transform(vg.Point(c * self.scale, r * self.scale)),
+                           self.transform(vg.Point((c + 1) * self.scale, r * self.scale)),
+                           self.transform(vg.Point((c + 1) * self.scale, (r + 1) * self.scale)),
+                           self.transform(vg.Point(c * self.scale, (r + 1) * self.scale))])
 
     def query(self, point: vg.Point) -> (int, int):
         rel_point = vg.Point(point.x - self.origin.x, point.y - self.origin.y)
@@ -85,5 +95,4 @@ class RasterGrid(Grid):
         if not (0 <= r < self.get_num_rows() and 0 < c <= self.get_num_cols()):
             raise ValueError(f"Point {point} not inside grid bounds")
         return r, c
-
 

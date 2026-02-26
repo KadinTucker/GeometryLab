@@ -48,7 +48,7 @@ class Segment:
         self.p2 = p2
 
     def get_length(self):
-        return distance_point_point(self.p1, self.p2)
+        return math.hypot(self.p1.x - self.p2.x, self.p1.y - self.p2.y)
 
     def get_direction(self):
         l = self.get_length()
@@ -120,9 +120,3 @@ class Polygon(LineString):
     def __str__(self):
         return "-".join(map(str, self.vertices + [self.vertices[0]]))
 
-def distance_point_point(p1: Point, p2: Point):
-    return math.hypot(p1.x - p2.x, p1.y - p2.y)
-
-def distance_point_segment(p: Point, s: Segment):
-    # Complex!
-    pass

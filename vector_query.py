@@ -1,3 +1,5 @@
+import math
+
 import vector_geom as vg
 from enum import IntEnum
 
@@ -61,6 +63,8 @@ def point_inside_polygon(point: vg.Point, polygon: vg.Polygon) -> bool:
 
 def project_point_onto_line(point: vg.Point, line: vg.Segment) -> (vg.Point, float):
     l = line.get_length()
+    if l == 0:  # Degenerate lines technically exist!
+        return line.p1.copy(), 0.0
     scalar_product = ((point.x - line.p1.x) * (line.p2.x - line.p1.x)
                       + (point.y - line.p1.y) * (line.p2.y - line.p1.y)) / l
     return (vg.Point(line.p1.x + (line.p2.x - line.p1.x) * scalar_product / l,
@@ -68,7 +72,7 @@ def project_point_onto_line(point: vg.Point, line: vg.Segment) -> (vg.Point, flo
             scalar_product)
 
 def point_equals_point(point_1: vg.Point, point_2: vg.Point) -> bool:
-    return vg.distance_point_point(point_1, point_2) < POINT_EQUALITY_TOLERANCE
+    return distance_point_point(point_1, point_2) < POINT_EQUALITY_TOLERANCE
 
 def point_inside_line(point: vg.Point, line: vg.Segment) -> bool:
     return point_equals_point(point, project_point_onto_line(point, line)[0])
@@ -115,3 +119,17 @@ def linestring_crosses_polygon(linestring: vg.LineString, polygon: vg.Polygon) -
 
 def polygon_overlaps_polygon(polygon_1: vg.Polygon, polygon_2: vg.Polygon) -> bool:
     return linestring_intersects_linestring(polygon_1, polygon_2)
+
+def distance_point_point(point_1: vg.Point, point_2: vg.Point):
+    return math.hypot(point_1.x - point_2.x, point_1.y - point_2.y)
+
+def distance_point_line(point: vg.Point, line: vg.Segment):
+    return distance_point_point(point, project_point_onto_line(point, line)[0])
+
+def distance_point_segment(point: vg.Point, segment: vg.Segment):
+    proj_point, sp = project_point_onto_line(point, segment)
+    if sp <= 0:
+        return distance_point_point(segment.p1, point)
+    elif sp >= segment.get_length():
+        return distance_point_point(segment.p2, point)
+    return distance_point_line(point, segment)
